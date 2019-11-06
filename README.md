@@ -1,6 +1,5 @@
 # aci-mso-api-demo
-
-Description 
+ 
 This repository contains an Ansible playbook and a python script that showcase an example of using the ACI Multisite Orchestrator (MSO) API to automate common tasks.
 
 The python script as a few dependencies:
