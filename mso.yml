@@ -1,0 +1,252 @@
+---
+
+# MSO Lab Playbook
+- name: Configuring a Schema on MSO
+  hosts: mso
+  connection: local
+  gather_facts: no
+
+  vars:
+    tenant: Spectrum-Ansible
+    schema: Spectrum-2
+    template: Template 1
+    vrf: VRF1
+    bd: BD1
+    ap: ANP1
+    epg1: Web
+    epg2: DB
+    l3out: L3Out
+    extEpg1: Internet
+    contract1: Web-to-DB
+    contract2: Web-to-Internet
+    filter1: Any
+    site: On-premises
+    mso_a: &mso_anchor
+      host: "{{ ansible_ssh_host }}"
+      username: "{{ mso_user }}"
+      password: "{{ mso_password }}"
+
+    template_a: &template_anchor
+      schema: "{{ schema }}"
+      template: "{{ template }}"
+
+
+  tasks:
+  - name: Add a tenant
+    delegate_to: localhost
+    mso_tenant:
+     <<: *mso_anchor
+     tenant: "{{ tenant }}"
+     display_name: "{{ tenant }}"
+     description: MSO Ansible Tenant
+     users: "{{ mso_user }}"
+     sites:
+       - "{{ site }}"
+     state: present
+     validate_certs: no
+
+  - name: Add Template to Schema
+    mso_schema_template:
+     <<: *mso_anchor
+     <<: *template_anchor
+     tenant: "{{ tenant }}"
+     state: present
+     validate_certs: no
+    delegate_to: localhost
+
+  - name: Add ANP
+    mso_schema_template_anp:
+     <<: *mso_anchor
+     <<: *template_anchor
+     anp: "{{ ap }}"
+     state: present
+     validate_certs: no
+    delegate_to: localhost
+
+  - name: Add VRF
+    mso_schema_template_vrf:
+     <<: *mso_anchor
+     <<: *template_anchor
+     vrf: "{{ vrf }}"
+     state: present
+     validate_certs: no
+    delegate_to: localhost
+
+  - name: Add BD
+    mso_schema_template_bd:
+     <<: *mso_anchor
+     <<: *template_anchor
+     bd: "{{ bd }}"
+     vrf: 
+      name: "{{ vrf }}"
+     state: present
+     validate_certs: no
+     layer2_stretch: True
+    delegate_to: localhost
+
+  - name: Add Subnet to BD
+    mso_schema_template_bd_subnet:
+     <<: *mso_anchor
+     <<: *template_anchor
+     bd: "{{ bd }}"
+     ip: 10.101.0.254/24
+     state: present
+     scope: public
+     validate_certs: no
+    delegate_to: localhost
+
+  - name: Add EPG
+    mso_schema_template_anp_epg:
+     <<: *mso_anchor
+     <<: *template_anchor
+     anp: "{{ ap }}"
+     epg: "{{ epg1 }}"
+     bd:
+      name: "{{ bd }}"
+     state: present
+     validate_certs: no
+    delegate_to: localhost
+
+  - name: Add EPG
+    mso_schema_template_anp_epg:
+     <<: *mso_anchor
+     <<: *template_anchor
+     anp: "{{ ap }}"
+     epg: "{{ epg2 }}"
+     bd:
+      name: "{{ bd }}"
+     state: present
+     validate_certs: no
+    delegate_to: localhost
+
+  # - name: Add a new L3out
+  #   mso_schema_template_l3out:
+  #     <<: *mso_anchor
+  #     <<: *template_anchor
+  #     l3out: "{{ l3out }}"
+  #     vrf:
+  #       name: "{{ vrf }}"
+  #     state: present
+  #     validate_certs: no
+  #   delegate_to: localhost
+
+
+  # - name: Add External EPG
+  #   mso_schema_template_externalepg:
+  #    <<: *mso_anchor
+  #    <<: *template_anchor
+  #    externalepg: "{{ extEpg1 }}"
+  #    vrf:
+  #     name: "{{ vrf }}"
+  #    l3out:
+  #     name: "{{ l3out }}"
+  #    state: present
+  #    validate_certs: no
+  #   delegate_to: localhost
+
+  - name: Add Filter
+    mso_schema_template_filter_entry:
+     <<: *mso_anchor
+     <<: *template_anchor
+     filter: "{{ filter1 }}"
+     entry: "{{ filter1 }}"
+     ethertype: unspecified
+     state: present
+     validate_certs: no
+    delegate_to: localhost
+
+  - name: Add Contract
+    mso_schema_template_contract_filter:
+     <<: *mso_anchor
+     <<: *template_anchor
+     contract: "{{ contract1 }}"
+     contract_filter_type: both-way
+     filter: "{{ filter1 }}"
+     filter_type: both-way
+     state: present
+     validate_certs: no
+    delegate_to: localhost
+
+  - name: Add Contract to EPG
+    mso_schema_template_anp_epg_contract:
+     <<: *mso_anchor
+     <<: *template_anchor
+     anp: "{{ ap }}"     
+     epg: "{{ epg1 }}"
+     contract:
+       name: "{{ contract1 }}"
+       type: consumer
+     state: present
+     validate_certs: no
+    delegate_to: localhost
+
+  - name: Add Contract to EPG
+    mso_schema_template_anp_epg_contract:
+     <<: *mso_anchor
+     <<: *template_anchor
+     anp: "{{ ap }}"
+     epg: "{{ epg2 }}"
+     contract:
+       name: "{{ contract1 }}"
+       type: provider
+     state: present
+     validate_certs: no
+    delegate_to: localhost
+  
+  - name: Add Contract
+    mso_schema_template_contract_filter:
+     <<: *mso_anchor
+     <<: *template_anchor
+     contract: "{{ contract2 }}"
+     contract_filter_type: both-way
+     filter: "{{ filter1 }}"
+     filter_type: both-way
+     state: present
+     validate_certs: no
+    delegate_to: localhost
+
+  - name: Add Contract to EPG
+    mso_schema_template_anp_epg_contract:
+     <<: *mso_anchor
+     <<: *template_anchor
+     anp: "{{ ap }}"
+     epg: "{{ epg1 }}"
+     contract:
+       name: "{{ contract2 }}"
+       type: provider
+     state: present
+     validate_certs: no
+    delegate_to: localhost
+
+  # - name: Add a new site
+  #   mso_site:
+  #     <<: *mso_anchor
+  #     site: "{{ site }}"
+  #     apic_username: admin
+  #     apic_password: MySuperSecretPassword
+  #     apic_site_id: 1
+  #     urls:
+  #     - 173.36.219.190
+  #     location:
+  #       latitude: 47.25848009811691
+  #       longitude: -123.91160220994475
+  #     state: present
+  #   delegate_to: localhost
+
+  - name: Add Site to Schema
+    mso_schema_site:
+     <<: *mso_anchor
+     <<: *template_anchor
+     site: "{{ site }}"
+     state: present
+     validate_certs: no
+    delegate_to: localhost
+
+  - name: Deploy a schema template
+    mso_schema_template_deploy:
+     <<: *mso_anchor
+     <<: *template_anchor
+     state: deploy
+     validate_certs: no
+    delegate_to: localhost
+

@@ -1,0 +1,79 @@
+---
+
+# MSO Lab Playbook
+- name: Configuring a Schema on MSO
+  hosts: mso
+  connection: local
+  gather_facts: no
+
+  vars:
+    tenant: Spectrum-Ansible
+    schema: Spectrum-2
+    template: Template 1
+    vrf: VRF1
+    bd: BD1
+    ap: ANP1
+    epg1: Web
+    epg2: DB
+    l3out: L3Out
+    extEpg1: Internet
+    contract1: Web-to-DB
+    contract2: Web-to-Internet
+    filter1: Any
+    site: On-premises
+    mso_a: &mso_anchor
+      host: "{{ ansible_ssh_host }}"
+      username: "{{ mso_user }}"
+      password: "{{ mso_password }}"
+
+    template_a: &template_anchor
+      schema: "{{ schema }}"
+      template: "{{ template }}"
+
+
+  tasks:
+    - name: Undeploy a schema template
+      mso_schema_template_deploy:
+        <<: *mso_anchor
+        <<: *template_anchor
+        site: "{{ site }}"
+        state: undeploy
+        validate_certs: no
+      delegate_to: localhost
+
+    # - name: Remove Site from Schema
+    #   mso_schema_site:
+    #     <<: *mso_anchor
+    #     <<: *template_anchor
+    #     site: "{{ site }}"
+    #     state: absent
+    #     validate_certs: no
+    #   delegate_to: localhost
+
+    - name: Delete Schema
+      mso_schema:
+        <<: *mso_anchor
+        schema: "{{ schema }}"
+        state: absent
+        validate_certs: no
+      delegate_to: localhost
+    
+    - name: Delete tenant
+      delegate_to: localhost
+      mso_tenant:
+        <<: *mso_anchor
+        tenant: "{{ tenant }}"
+        display_name: "{{ tenant }}"
+        description: MSO Ansible Tenant
+        users: "{{ mso_user }}"
+        sites:
+          - "{{ site }}"
+        state: absent
+        validate_certs: no
+
+
+
+
+
+
+

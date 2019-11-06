@@ -1,0 +1,14 @@
+# Needed for OSX
+localhost ansible_python_interpreter=/usr/bin/python ansible_connection=local
+
+# ## Configure 'ip' variable to bind kubernetes services on a
+# ## different ip than the default iface
+# ## For ACI this becomes the node_ip
+
+lh-dmz1-mso ansible_ssh_host="192.168.200.193" user="root"
+
+[mso]
+lh-dmz1-mso
+
+[pod1]
+lh-dmz1-mso

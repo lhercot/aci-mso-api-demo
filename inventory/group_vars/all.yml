@@ -1,0 +1,6 @@
+##Config
+dns_servers: 8.8.8.8
+ntp_servers: 173.36.212.205
+timezone: America/Los_Angeles
+mso_user: admin
+mso_password: MySuperSecretPassword
