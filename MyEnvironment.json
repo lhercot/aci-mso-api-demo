@@ -1,0 +1,21 @@
+{
+	"name": "MyEnvironment",
+	"values": [
+		{
+			"key": "MSO-USER",
+			"value": "admin",
+			"enabled": true
+		},
+		{
+			"key": "MSO-PASSWORD",
+			"value": "MySuperSecretPassword",
+			"enabled": true
+		},
+		{
+			"key": "mso",
+			"value": "192.168.200.193",
+			"enabled": true
+		}
+	],
+	"_postman_variable_scope": "environment"
+}

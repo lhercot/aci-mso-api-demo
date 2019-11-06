@@ -1,0 +1,998 @@
+{
+	"info": {
+		"_postman_id": "73e3b378-9343-43dd-918c-3fc60a9aefc4",
+		"name": "Lionel's MSO API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "6b989b0f-5d4b-493e-9e69-69de394fa73f",
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"postman.setEnvironmentVariable(\"token\", jsonData.token);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n \"username\": \"{{MSO-USER}}\",\n \"password\": \"{{MSO-PASSWORD}}\"\n}"
+				},
+				"url": {
+					"raw": "https://{{mso}}/api/v1/auth/login",
+					"protocol": "https",
+					"host": [
+						"{{mso}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get sites",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "7d4f8017-8a78-4e29-8207-fa976775191d",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"var jsonData = JSON.parse(responseBody);",
+							"for (i = 0; i < jsonData.sites.length; i++) {",
+							"    if (jsonData.sites[i].apicSiteId == 1){",
+							"        postman.setEnvironmentVariable(\"site1_id\", jsonData.sites[i].id);",
+							"        postman.setEnvironmentVariable(\"apic_url\", jsonData.sites[i].urls[0]);",
+							"    }",
+							"}",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"url": {
+					"raw": "https://{{mso}}/api/v1/sites",
+					"protocol": "https",
+					"host": [
+						"{{mso}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"sites"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get users",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "c0c82396-5655-4170-92ce-66e3acfc90f9",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"var jsonData = JSON.parse(responseBody);",
+							"postman.setEnvironmentVariable(\"user\", jsonData.id);",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "https://{{mso}}/api/v1/users",
+					"protocol": "https",
+					"host": [
+						"{{mso}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create tenant",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "0a9bb59f-4b08-4b5b-a6ca-a012cf237a8f",
+						"exec": [
+							"tests[\"Status code is 201\"] = responseCode.code === 201;",
+							"var jsonData = JSON.parse(responseBody);",
+							"postman.setEnvironmentVariable(\"tenant_id\", jsonData.id);",
+							"postman.setEnvironmentVariable(\"tenant_name\", jsonData.name);",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"displayName\": \"Spectrum-Postman\",\n  \"name\": \"Spectrum-Postman\",\n  \"description\": \"\",\n  \"siteAssociations\": [\n    {\n      \"siteId\": \"{{site1_id}}\",\n      \"securityDomains\": []\n    }\n    \n  ],\n  \"userAssociations\": []\n}"
+				},
+				"url": {
+					"raw": "https://{{mso}}/api/v1/tenants",
+					"protocol": "https",
+					"host": [
+						"{{mso}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"tenants"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get tenants",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "0a9bb59f-4b08-4b5b-a6ca-a012cf237a8f",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "https://{{mso}}/api/v1/tenants",
+					"protocol": "https",
+					"host": [
+						"{{mso}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"tenants"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create a schema",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "128e1410-8625-4591-a08c-264217e280bb",
+						"exec": [
+							"tests[\"Status code is 201\"] = responseCode.code === 201;",
+							"var jsonData = JSON.parse(responseBody);",
+							"postman.setEnvironmentVariable(\"schema_id\", jsonData.id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"displayName\": \"Spectrum-Postman\",\n  \"templates\": [\n    {\n      \"name\": \"Template1\",\n      \"tenantId\": \"{{tenant_id}}\",\n      \"displayName\": \"Template1\",\n      \"anps\": [],\n      \"contracts\": [],\n      \"vrfs\": [],\n      \"bds\": [],\n      \"filters\": [],\n      \"externalEpgs\": [],\n      \"serviceGraphs\": []\n    }\n  ],\n  \"sites\": []\n}"
+				},
+				"url": {
+					"raw": "https://{{mso}}/api/v1/schemas",
+					"protocol": "https",
+					"host": [
+						"{{mso}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"schemas"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get schemas",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "0a9bb59f-4b08-4b5b-a6ca-a012cf237a8f",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "https://{{mso}}/api/v1/schemas",
+					"protocol": "https",
+					"host": [
+						"{{mso}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"schemas"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create a schema in one go",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "128e1410-8625-4591-a08c-264217e280bb",
+						"exec": [
+							"tests[\"Status code is 201\"] = responseCode.code === 201;",
+							"var jsonData = JSON.parse(responseBody);",
+							"postman.setEnvironmentVariable(\"schema_id\", jsonData.id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"displayName\": \"Spectrum-Postman-OneGo\",\n    \"templates\": [\n        {\n            \"name\": \"Template1\",\n            \"displayName\": \"Template 1\",\n            \"tenantId\": \"{{tenant_id}}\",\n            \"anps\": [\n                {\n                    \"name\": \"ANP\",\n                    \"displayName\": \"ANP\",\n                    \"epgs\": [\n                        {\n                            \"name\": \"Web\",\n                            \"displayName\": \"Web\",\n                            \"epgRef\": \"/templates/Template1/anps/ANP/epgs/Web\",\n                            \"contractRelationships\": [\n                                {\n                                    \"relationshipType\": \"provider\",\n                                    \"contractRef\": \"/templates/Template1/contracts/Web-to-Internet\"\n                                },\n                                {\n                                    \"relationshipType\": \"consumer\",\n                                    \"contractRef\": \"/templates/Template1/contracts/Any\"\n                                }\n                            ],\n                            \"subnets\": [],\n                            \"uSegEpg\": false,\n                            \"uSegAttrs\": [],\n                            \"intraEpg\": \"unenforced\",\n                            \"proxyArp\": false,\n                            \"preferredGroup\": false,\n                            \"bdRef\": \"/templates/Template1/bds/BD1\"\n                        },\n                        {\n                            \"name\": \"DB\",\n                            \"displayName\": \"DB\",\n                            \"epgRef\": \"/templates/Template1/anps/ANP/epgs/DB\",\n                            \"contractRelationships\": [\n                                {\n                                    \"relationshipType\": \"provider\",\n                                    \"contractRef\": \"/templates/Template1/contracts/Any\"\n                                }\n                            ],\n                            \"subnets\": [],\n                            \"uSegEpg\": false,\n                            \"uSegAttrs\": [],\n                            \"intraEpg\": \"unenforced\",\n                            \"proxyArp\": false,\n                            \"preferredGroup\": false,\n                            \"bdRef\": \"/templates/Template1/bds/BD1\"\n                        }\n                    ]\n                }\n            ],\n            \"vrfs\": [\n                {\n                    \"name\": \"VRF1\",\n                    \"displayName\": \"VRF1\",\n                    \"vrfRef\": \"/templates/Template1/vrfs/VRF1\"\n                }\n            ],\n            \"bds\": [\n                {\n                    \"name\": \"BD1\",\n                    \"displayName\": \"BD1\",\n                    \"bdRef\": \"/templates/Template1/bds/BD1\",\n                    \"l2UnknownUnicast\": \"proxy\",\n                    \"intersiteBumTrafficAllow\": true,\n                    \"optimizeWanBandwidth\": true,\n                    \"l2Stretch\": true,\n                    \"subnets\": [\n                        {\n                            \"ip\": \"10.101.0.254/24\",\n                            \"description\": \"On-Premises BD Gateway\",\n                            \"scope\": \"public\",\n                            \"shared\": false\n                        }\n                    ],\n                    \"vrfRef\": \"/templates/Template1/vrfs/VRF1\"\n                }\n            ],\n            \"contracts\": [\n                {\n                    \"name\": \"Any\",\n                    \"displayName\": \"Web-to-DB\",\n                    \"contractRef\": \"/templates/Template1/contracts/Any\",\n                    \"filterRelationships\": [\n                        {\n                            \"filterRef\": \"/templates/Template1/filters/Any\",\n                            \"directives\": [\n                                \"none\"\n                            ]\n                        }\n                    ],\n                    \"scope\": \"context\",\n                    \"filterType\": \"bothWay\",\n                    \"filterRelationshipsProviderToConsumer\": [],\n                    \"filterRelationshipsConsumerToProvider\": []\n                },\n                {\n                    \"name\": \"Web-to-Internet\",\n                    \"displayName\": \"Web-to-Internet\",\n                    \"contractRef\": \"/templates/Template1/contracts/Web-to-Internet\",\n                    \"filterRelationships\": [\n                        {\n                            \"filterRef\": \"/templates/Template1/filters/Any\",\n                            \"directives\": [\n                                \"none\"\n                            ]\n                        }\n                    ],\n                    \"scope\": \"context\",\n                    \"filterType\": \"bothWay\",\n                    \"filterRelationshipsProviderToConsumer\": [],\n                    \"filterRelationshipsConsumerToProvider\": []\n                }\n            ],\n            \"filters\": [\n                {\n                    \"name\": \"Any\",\n                    \"displayName\": \"Any\",\n                    \"filterRef\": \"/templates/Template1/filters/Any\",\n                    \"entries\": [\n                        {\n                            \"name\": \"Any\",\n                            \"displayName\": \"Any\",\n                            \"description\": \"\",\n                            \"etherType\": \"unspecified\",\n                            \"arpFlag\": \"unspecified\",\n                            \"ipProtocol\": \"unspecified\",\n                            \"matchOnlyFragments\": false,\n                            \"stateful\": false,\n                            \"sourceFrom\": \"unspecified\",\n                            \"sourceTo\": \"unspecified\",\n                            \"destinationFrom\": \"unspecified\",\n                            \"destinationTo\": \"unspecified\",\n                            \"tcpSessionRules\": [\n                                \"unspecified\"\n                            ]\n                        }\n                    ]\n                }\n            ],\n            \"externalEpgs\": [\n                {\n                    \"name\": \"Internet\",\n                    \"displayName\": \"Internet\",\n                    \"extEpgType\": \"on-premise\",\n                    \"vrfRef\": \"/templates/Template1/vrfs/VRF1\",\n                    \"subnets\": [\n                        {\n                            \"ip\": \"10.1.40.0/24\",\n                            \"scope\": [\n                                \"shared-rtctrl\"\n                            ],\n                            \"aggregate\": []\n                        }\n                    ],\n                    \"selectors\": [],\n                    \"contractRelationships\": [\n                        {\n                            \"relationshipType\": \"consumer\",\n                            \"contractRef\": \"/templates/Template1/contracts/Web-to-Internet\"\n                        }\n                    ],\n                    \"preferredGroup\": false,\n                    \"externalEpgRef\": \"/templates/Template1/externalEpgs/Internet\",\n                    \"l3outRef\": \"/templates/Template1/l3outs/RoW\",\n                    \"anpRef\": \"\"\n                }\n            ],\n            \"serviceGraphs\": [],\n            \"intersiteL3outs\": [\n                {\n                    \"name\": \"RoW\",\n                    \"displayName\": \"RoW\",\n                    \"vrfRef\": \"/templates/Template1/vrfs/VRF1\",\n                    \"l3outRef\": \"/templates/Template1/l3outs/RoW\"\n                }\n            ]\n        }\n    ],\n    \"_updateVersion\": 54,\n    \"sites\": [\n        {\n            \"siteId\": \"5c7c95b25100008f01c1ee3c\",\n            \"templateName\": \"Template1\",\n            \"anps\": [\n                {\n                    \"anpRef\": \"/templates/Template1/anps/ANP\",\n                    \"epgs\": [\n                        {\n                            \"epgRef\": \"/templates/Template1/anps/ANP/epgs/Web\",\n                            \"domainAssociations\": [\n                                {\n                                    \"dn\": \"uni/phys-BM_physDom\",\n                                    \"domainType\": \"physicalDomain\",\n                                    \"deployImmediacy\": \"immediate\",\n                                    \"resolutionImmediacy\": \"immediate\"\n                                }\n                            ],\n                            \"staticPorts\": [\n                                {\n                                    \"type\": \"port\",\n                                    \"path\": \"topology/pod-1/paths-101/pathep-[eth1/10]\",\n                                    \"portEncapVlan\": 520,\n                                    \"deploymentImmediacy\": \"immediate\",\n                                    \"mode\": \"regular\"\n                                }\n                            ],\n                            \"staticLeafs\": [],\n                            \"uSegAttrs\": [],\n                            \"subnets\": [],\n                            \"selectors\": []\n                        },\n                        {\n                            \"epgRef\": \"/templates/Template1/anps/ANP/epgs/DB\",\n                            \"domainAssociations\": [\n                                {\n                                    \"dn\": \"uni/phys-BM_physDom\",\n                                    \"domainType\": \"physicalDomain\",\n                                    \"deployImmediacy\": \"immediate\",\n                                    \"resolutionImmediacy\": \"immediate\"\n                                }\n                            ],\n                            \"staticPorts\": [\n                                {\n                                    \"type\": \"port\",\n                                    \"path\": \"topology/pod-1/paths-101/pathep-[eth1/10]\",\n                                    \"portEncapVlan\": 521,\n                                    \"deploymentImmediacy\": \"immediate\",\n                                    \"mode\": \"regular\"\n                                }\n                            ]\n                        }\n                    ]\n                }\n            ],\n            \"vrfs\": [],\n            \"bds\": [],\n            \"contracts\": [],\n            \"externalEpgs\": [],\n            \"serviceGraphs\": [],\n            \"intersiteL3outs\": []\n        }\n    ]\n}"
+				},
+				"url": {
+					"raw": "https://{{mso}}/api/v1/schemas",
+					"protocol": "https",
+					"host": [
+						"{{mso}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"schemas"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Modify Template Name",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "dfd89ad7-29e3-4d04-b5f9-6032baa661e2",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": " \n  [ \n    { \"op\": \"replace\", \n      \"path\": \"/templates/{{template_name}}/displayName\",\n      \"value\": \"My Super Template\" \n     }\n   ]\n"
+				},
+				"url": {
+					"raw": "https://{{mso}}/api/v1/schemas/{{schema_id}}",
+					"protocol": "https",
+					"host": [
+						"{{mso}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"schemas",
+						"{{schema_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add an empty ANP element",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "203072cd-2491-4ca4-b81e-19fcc17f4614",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"var jsonData = JSON.parse(responseBody);",
+							"postman.setEnvironmentVariable(\"new_anp_name\", jsonData.templates[0].anps[0].name);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "\n  [ \n    { \"op\": \"add\", \n      \"path\": \"/templates/{{template_name}}/anps/-\",\n      \"value\": {\"name\": \"ANP1\",\n                \"displayName\": \"ANP1\",\n      \t         \"epgs\":[]\n      }\n     }\n   ]\n"
+				},
+				"url": {
+					"raw": "https://{{mso}}/api/v1/schemas/{{schema_id}}",
+					"protocol": "https",
+					"host": [
+						"{{mso}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"schemas",
+						"{{schema_id}}"
+					]
+				},
+				"description": "An empty egps is required otherwise an error is thrown from backend."
+			},
+			"response": []
+		},
+		{
+			"name": "Add a VRF",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "620d8e74-785a-4c63-8779-20ec128ca8ce",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"var jsonData = JSON.parse(responseBody);",
+							"postman.setEnvironmentVariable(\"new_vrf_name\", jsonData.templates[0].vrfs[0].name);",
+							"postman.setEnvironmentVariable(\"vrf_name\", jsonData.templates[0].vrfs[1].name);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\n  {\n    \"op\": \"add\",\n    \"path\": \"/templates/Template1/vrfs/-\",\n    \"value\": {\n      \"displayName\": \"vrf2\",\n      \"name\": \"vrf2\"\n    }\n  },\n  {\n    \"op\": \"add\",\n    \"path\": \"/templates/Template1/vrfs/-\",\n    \"value\": {\n      \"displayName\": \"vrf1\",\n      \"name\": \"vrf1\"\n    }\n  }\n]"
+				},
+				"url": {
+					"raw": "https://{{mso}}/api/v1/schemas/{{schema_id}}",
+					"protocol": "https",
+					"host": [
+						"{{mso}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"schemas",
+						"{{schema_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete a vrf",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "547fd5c7-b451-47ee-b55a-c09318744d00",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\n  {\n    \"op\": \"remove\",\n    \"path\": \"/templates/{{template_name}}/vrfs/vrf2\"\n  }\n]"
+				},
+				"url": {
+					"raw": "https://{{mso}}/api/v1/schemas/{{schema_id}}",
+					"protocol": "https",
+					"host": [
+						"{{mso}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"schemas",
+						"{{schema_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add_filter",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "24b14959-cf27-43c3-a917-d906a8c7f30c",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"var jsonData = JSON.parse(responseBody);",
+							"postman.setEnvironmentVariable(\"filter_name\", jsonData.templates[0].filters[0].name);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\n  {\n    \"op\": \"add\",\n    \"path\": \"/templates/{{template_name}}/filters/-\",\n    \"value\": {\n      \"displayName\": \"Any\",\n      \"name\": \"Any\",\n      \"entries\": [\n        {\n          \"etherType\": \"unspecified\",\n          \"tcpSessionRules\": [\n            \"unspecified\"\n          ],\n          \"sourceFrom\": \"unspecified\",\n          \"destinationTo\": \"unspecified\",\n          \"arpFlag\": \"unspecified\",\n          \"stateful\": false,\n          \"displayName\": \"Any\",\n          \"matchOnlyFragments\": false,\n          \"sourceTo\": \"unspecified\",\n          \"destinationFrom\": \"unspecified\",\n          \"description\": \"\",\n          \"ipProtocol\": \"unspecified\",\n          \"name\": \"Any\"\n        }\n      ]\n    }\n  }\n]"
+				},
+				"url": {
+					"raw": "https://{{mso}}/api/v1/schemas/{{schema_id}}",
+					"protocol": "https",
+					"host": [
+						"{{mso}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"schemas",
+						"{{schema_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add a contract",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "0019d44b-da48-44ab-9de5-508686ea1b85",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"var jsonData = JSON.parse(responseBody);",
+							"postman.setEnvironmentVariable(\"contract_name\", jsonData.templates[0].contracts[0].name);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\n  {\n    \"op\": \"add\",\n    \"path\": \"/templates/{{template_name}}/contracts/-\",\n    \"value\": {\n      \"displayName\": \"Any\",\n      \"name\": \"Any\",\n      \"scope\": \"context\",\n      \"serviceGraphRelationship\": null,\n      \"filterRelationships\": [\n        {\n          \"filterRef\": {\n            \"schemaId\": \"{{schema_id}}\",\n            \"templateName\": \"{{template_name}}\",\n            \"filterName\": \"{{filter_name}}\"\n          },\n          \"directives\": [\n            \"none\"\n          ]\n        }\n      ],\n      \"filterRelationshipsProviderToConsumer\": [],\n      \"filterRelationshipsConsumerToProvider\": [],\n      \"filterType\": \"bothWay\"\n    }\n  }\n]"
+				},
+				"url": {
+					"raw": "https://{{mso}}/api/v1/schemas/{{schema_id}}",
+					"protocol": "https",
+					"host": [
+						"{{mso}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"schemas",
+						"{{schema_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add bd",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ab133760-4e98-430c-b301-16ebac1d4b49",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"var jsonData = JSON.parse(responseBody);",
+							"postman.setEnvironmentVariable(\"new_bd_name\", jsonData.templates[0].bds[0].name);",
+							"postman.setEnvironmentVariable(\"bd_name\", jsonData.templates[0].bds[1].name);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\n  {\n    \"op\": \"add\",\n    \"path\": \"/templates/{{template_name}}/bds/-\",\n    \"value\": {\n      \"displayName\": \"BD1\",\n      \"name\": \"BD1\",\n      \"vrfRef\": {\n        \"schemaId\": \"{{schema_id}}\",\n        \"templateName\": \"{{template_name}}\",\n        \"vrfName\": \"{{vrf_name}}\"\n      },\n      \"l2Stretch\": true,\n      \"l2UnknownUnicast\": \"proxy\",\n      \"subnets\": [],\n      \"intersiteBumTrafficAllow\": true,\n      \"optimizeWanBandwidth\": true\n    }\n  },\n  {\n    \"op\": \"add\",\n    \"path\": \"/templates/{{template_name}}/bds/-\",\n    \"value\": {\n      \"displayName\": \"bd2\",\n      \"name\": \"bd2\",\n      \"vrfRef\": {\n        \"schemaId\": \"{{schema_id}}\",\n        \"templateName\": \"{{template_name}}\",\n        \"vrfName\": \"{{vrf_name}}\"\n      },\n      \"l2Stretch\": true,\n      \"l2UnknownUnicast\": \"proxy\",\n      \"subnets\": [],\n      \"intersiteBumTrafficAllow\": true,\n      \"optimizeWanBandwidth\": true\n    }\n  }\n]"
+				},
+				"url": {
+					"raw": "https://{{mso}}/api/v1/schemas/{{schema_id}}",
+					"protocol": "https",
+					"host": [
+						"{{mso}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"schemas",
+						"{{schema_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add an EPG ",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "fb3712e8-b654-488e-b52d-676c17b6f769",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"var jsonData = JSON.parse(responseBody);",
+							"postman.setEnvironmentVariable(\"new_epg_name\", jsonData.templates[0].anps[0].epgs[0].name);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "\n  [ \n    { \"op\": \"add\", \n      \"path\": \"/templates/{{template_name}}/anps/{{new_anp_name}}/epgs/-\",\n      \"value\":  {\n                                    \"name\": \"EPG2\",\n                                    \"displayName\": \"EPG 2\",\n                                   \n                                    \"contractRelationships\": [],\n                                    \"subnets\": [],\n                                    \"uSegEpg\": false,\n                                    \"uSegAttrs\": [],\n                                    \"intraEpg\": \"unenforced\",\n                                    \"proxyArp\": false,\n                                    \"bdRef\": {\"schemaId\":\"{{schema_id}}\",\"templateName\":\"{{template_name}}\",\"bdName\":\"{{bd_name}}\"}\n                                }\n      \n      \n      \n     \n     }\n   ]"
+				},
+				"url": {
+					"raw": "https://{{mso}}/api/v1/schemas/{{schema_id}}",
+					"protocol": "https",
+					"host": [
+						"{{mso}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"schemas",
+						"{{schema_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add sites in schema",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "f3327be0-b48d-4065-814a-127bf3e3b874",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "\n  [ \n    { \"op\": \"add\", \n      \"path\": \"/sites/-\",\n      \"value\":  {\n                    \"siteId\": \"{{site1_id}}\",\n                    \"templateName\": \"{{template_name}}\",\n                    \"anps\": [],\n                    \"vrfs\": [],\n                    \"bds\": [],\n                     \"serviceGraphs\": [\n                      \n                    ],\n                    \"externalEpgs\": [{\"externalEpgRef\" :{\"schemaId\": \"{{schema_id}}\", \"templateName\" : \"{{template_name}}\", \"externalEpgName\" : \"externalEPG2\"} , \"l3outDn\" : \"uni/tn-common/lDevVip-FW1/lIf-C3\",\n                    \t\"vrfRef\" : {\"schemaId\": \"{{schema_id}}\", \"templateName\" : \"{{template_name}}\", \"vrfName\" : \"{{vrf_name}}\"}\n                    }]\n            }\n      \n                                    \n     }\n   ]"
+				},
+				"url": {
+					"raw": "https://{{mso}}/api/v1/schemas/{{schema_id}}",
+					"protocol": "https",
+					"host": [
+						"{{mso}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"schemas",
+						"{{schema_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "push to sites",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "0a9bb59f-4b08-4b5b-a6ca-a012cf237a8f",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "https://{{mso}}/api/v1/execute/schema/{{schema_id}}/template/Template1",
+					"protocol": "https",
+					"host": [
+						"{{mso}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"execute",
+						"schema",
+						"{{schema_id}}",
+						"template",
+						"Template1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "undeploy template from site",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "0a9bb59f-4b08-4b5b-a6ca-a012cf237a8f",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "https://{{mso}}/api/v1/execute/schema/{{schema_id}}/template/Template1?undeploy={{site1_id}}",
+					"protocol": "https",
+					"host": [
+						"{{mso}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"execute",
+						"schema",
+						"{{schema_id}}",
+						"template",
+						"Template1"
+					],
+					"query": [
+						{
+							"key": "undeploy",
+							"value": "{{site1_id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete schema ",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "https://{{mso}}/api/v1/schemas/{{schema_id}}",
+					"protocol": "https",
+					"host": [
+						"{{mso}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"schemas",
+						"{{schema_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete tenant",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "https://{{mso}}/api/v1/tenants/{{tenant_id}}",
+					"protocol": "https",
+					"host": [
+						"{{mso}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"tenants",
+						"{{tenant_id}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
